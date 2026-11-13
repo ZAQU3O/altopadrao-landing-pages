@@ -29,6 +29,13 @@ export function middleware(req: NextRequest) {
       subdomain = hostname.replace('.localhost', '');
     } else if (hostname.endsWith('.altopadraoreservas.com')) {
       subdomain = hostname.replace('.altopadraoreservas.com', '');
+    } else if (hostname.endsWith('.vercel.app')) {
+      // e.g. altopadrao-reservas.vercel.app -> 3 parts (main domain)
+      // e.g. aldebaran.altopadrao-reservas.vercel.app -> 4 parts (subdomain)
+      const parts = hostname.split('.');
+      if (parts.length >= 4 && parts[0] !== 'www') {
+        subdomain = parts[0];
+      }
     } else {
       const parts = hostname.split('.');
       if (parts.length >= 3 && parts[0] !== 'www') {
