@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Space {
+  id                 String            @id @default(cuid())
+  slug               String            @unique // ex: "aldebaran", "terrasalphaville", "alphaville", "fazendareal"
+  subdomain          String            @unique // ex: "aldebaran.altopadraoreservas.com"
+  name               String            // ex: "Reserva Aldebaran"
+  eyebrow            String            // ex: "Reserva Aldebaran · Zona Leste de Teresina"
+  region             String            // ex: "Zona Leste · Teresina - PI"
+  developer          String            // ex: "Mãe Rainha Urbanismo"
+  offerTitle         String            // ex: "Entrada + 60x"
+  offerBadge         String            // ex: "SEM JUROS"
+  offerBarText       String            // ex: "Entrada + 60x sem juros"
+  heroSubtitle       String            // ex: "238 lotes a partir de 450 m², cercados por 49 mil m² de área verde e lazer. As unidades são limitadas."
+  projectTitle       String            // ex: "Luxo está na beleza do essencial."
+  projectLead        String
+  projectBody        String
+  architect          String
+  landscaper         String
+  spaTitle           String
+  spaLead            String
+  locationTitle      String
+  locationLead       String
+  ctaTitle           String
+  ctaLead            String
+  footerDisclaimer   String
+  whatsappNumber     String            @default("5586900000000")
+  accentColor        String            @default("#a8582f")
+  deepColor          String            @default("#16302e")
+  maxInstallments    Int               @default(60)
+  defaultLotPrice    Float             @default(350000)
+  defaultDownPayment Float             @default(70000)
+  totalLots          Int               @default(238)
+  availableLots      Int               @default(42)
+  minAreaM2          Int               @default(450)
+  greenAreaText      String            @default("49 mil m²")
+  heroImage          String
+  projectImage       String
+  locationImage      String
+  ctaBgImage         String
+  factsJson          String            // JSON array of { value, label }
+  offerBulletsJson   String            // JSON array of strings
+  mosaicJson         String            // JSON array of { cls, img, title, subtitle }
+  tagsJson           String            // JSON array of strings
+  spaItemsJson       String            // JSON array of { img, text }
+  familyItemsJson    String            // JSON array of { img, title, text }
+  locationBulletsJson String           // JSON array of { title, text }
+  areaOptionsJson    String            // JSON array of strings (ex: ["450 a 500 m²", "500 a 600 m²", "Acima de 600 m²"])
+  active             Boolean           @default(true)
+  featuredOrder      Int               @default(1)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  reservations       Reservation[]
+  captures           PropertyCapture[]
+  notifications      Notification[]
+}
+
+model Reservation {
+  id               String    @id @default(cuid())
+  protocol         String    @unique // ex: "RES-2026-4819"
+  spaceId          String
+  space            Space     @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  clientName       String
+  clientPhone      String
+  clientEmail      String?
+  clientCpf        String?
+  lotPreference    String?   // ex: "Quadra B · Lote 12 (Vista Área Verde)"
+  areaInterest     String    // ex: "450 a 500 m²"
+  lotValue         Float     // Valor total simulado/acordado do lote (R$)
+  downPayment      Float     // Valor de entrada (R$)
+  installments     Int       // Número de parcelas (ex: 60)
+  installmentValue Float     // Valor de cada parcela (R$)
+  status           String    @default("PENDENTE") // PENDENTE | EM_ANALISE | CONFIRMADA | CANCELADA
+  paymentStatus    String    @default("AGUARDANDO_ENTRADA") // AGUARDANDO_ENTRADA | SINAL_PAGO | ENTRADA_QUITADA | CONTRATO_ASSINADO
+  sourceHost       String    @default("aldebaran.altopadraoreservas.com")
+  brokerName       String?   @default("Plantão AltoPadrão")
+  notes            String?
+  confirmedAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model PropertyCapture {
+  id               String   @id @default(cuid())
+  protocol         String   @unique // ex: "CAP-2026-1029"
+  spaceId          String
+  space            Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  ownerName        String
+  ownerPhone       String
+  ownerEmail       String?
+  propertyType     String   // "Lote em Condomínio" | "Casa Construída" | "Mansão na Planta"
+  blockAndLot      String   // ex: "Quadra G - Lote 08"
+  areaM2           Float
+  askingPrice      Float
+  acceptsDirectFin Boolean  @default(true)
+  description      String?
+  status           String   @default("EM_AVALIACAO") // EM_AVALIACAO | APROVADO_ESTOQUE | VISTORIA_AGENDADA | ARQUIVADO
+  sourceHost       String   @default("altopadraoreservas.com")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Notification {
+  id            String   @id @default(cuid())
+  type          String   // "RESERVA_CONFIRMADA" | "NOVA_RESERVA" | "NOVA_CAPTACAO" | "STATUS_ATUALIZADO"
+  title         String
+  message       String
+  protocol      String?
+  spaceId       String?
+  space         Space?   @relation(fields: [spaceId], references: [id], onDelete: SetNull)
+  amount        Float?
+  clientName    String?
+  clientPhone   String?
+  channelsSent  String   @default("PAINEL_REALTIME,WHATSAPP_QUEUE,EMAIL_LOG")
+  read          Boolean  @default(false)
+  createdAt     DateTime @default(now())
+}
+
