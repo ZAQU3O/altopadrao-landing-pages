@@ -689,43 +689,12 @@ export default function AdminDashboardView({
 
           <div
             style={{
-              marginTop: '22px',
+              textAlign: 'center',
+              marginTop: '20px',
               paddingTop: '16px',
               borderTop: '1px solid rgba(233, 199, 155, 0.16)',
-              fontSize: '0.78rem',
-              color: 'rgba(246, 241, 232, 0.72)',
-              display: 'grid',
-              gap: '8px',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>Credenciais padrão da Diretoria:</span>
-              <button
-                type="button"
-                onClick={() => {
-                  setLoginEmail('admin@altopadraoreservas.com');
-                  setLoginPassword('altopadrao2026');
-                }}
-                style={{
-                  background: 'rgba(233, 199, 155, 0.14)',
-                  border: '1px solid rgba(233, 199, 155, 0.35)',
-                  color: '#e9c79b',
-                  padding: '3px 9px',
-                  fontSize: '0.72rem',
-                  borderRadius: '2px',
-                  cursor: 'pointer',
-                  fontWeight: 700,
-                }}
-              >
-                Preencher Acesso
-              </button>
-            </div>
-            <div style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: '#e9c79b' }}>
-              E-mail: admin@altopadraoreservas.com | Senha: altopadrao2026
-            </div>
-          </div>
-
-          <div style={{ textAlign: 'center', marginTop: '16px' }}>
             <a
               href="/"
               style={{
@@ -813,17 +782,24 @@ export default function AdminDashboardView({
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
             <button
               type="button"
-              onClick={handleSimulateRealtimeReservation}
-              className="btn"
+              onClick={refreshAllData}
               style={{
-                padding: '10px 16px',
-                fontSize: '0.82rem',
-                background: '#a8582f',
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                color: '#f6f1e8',
+                padding: '9px 14px',
+                borderRadius: '2px',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '0.8rem',
+                fontWeight: 600,
               }}
-              title="Dispara uma reserva confirmada de teste para demonstrar o alerta sonoro e visual em tempo real"
+              title="Atualizar dados do painel"
             >
-              <Sparkles size={15} />
-              Testar Nova Reserva Confirmada (Live)
+              <RefreshCw size={15} />
+              Atualizar Dados
             </button>
 
             <button
@@ -1130,7 +1106,23 @@ export default function AdminDashboardView({
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredReservations.map((r) => (
+                  {filteredReservations.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={6}
+                        style={{
+                          textAlign: 'center',
+                          padding: '38px 20px',
+                          color: 'var(--mut)',
+                        }}
+                      >
+                        Nenhuma reserva encontrada para o filtro atual. As novas
+                        reservas enviadas pelos clientes nas landing pages
+                        aparecerão aqui automaticamente em tempo real.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredReservations.map((r) => (
                     <tr key={r.id}>
                       <td>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
@@ -1293,7 +1285,8 @@ export default function AdminDashboardView({
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  ))
+                )}
                 </tbody>
               </table>
             </div>
@@ -1531,11 +1524,27 @@ export default function AdminDashboardView({
                   </tr>
                 </thead>
                 <tbody>
-                  {captures
-                    .filter(
-                      (c) => spaceFilter === 'ALL' || c.spaceId === spaceFilter
-                    )
-                    .map((c) => (
+                  {captures.filter(
+                    (c) => spaceFilter === 'ALL' || c.spaceId === spaceFilter
+                  ).length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={6}
+                        style={{
+                          textAlign: 'center',
+                          padding: '38px 20px',
+                          color: 'var(--mut)',
+                        }}
+                      >
+                        Nenhum imóvel cadastrado para captação até o momento.
+                      </td>
+                    </tr>
+                  ) : (
+                    captures
+                      .filter(
+                        (c) => spaceFilter === 'ALL' || c.spaceId === spaceFilter
+                      )
+                      .map((c) => (
                       <tr key={c.id}>
                         <td>
                           <b style={{ fontFamily: 'monospace', color: '#e9c79b' }}>
@@ -1626,7 +1635,8 @@ export default function AdminDashboardView({
                           </div>
                         </td>
                       </tr>
-                    ))}
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -1871,7 +1881,20 @@ export default function AdminDashboardView({
             </div>
 
             <div style={{ display: 'grid', gap: '12px' }}>
-              {notifications.map((n) => (
+              {notifications.length === 0 ? (
+                <div
+                  style={{
+                    padding: '32px 20px',
+                    textAlign: 'center',
+                    background: 'var(--bg)',
+                    borderRadius: '3px',
+                    color: 'var(--mut)',
+                  }}
+                >
+                  Nenhuma notificação registrada até o momento.
+                </div>
+              ) : (
+                notifications.map((n) => (
                 <div
                   key={n.id}
                   style={{
@@ -1953,7 +1976,8 @@ export default function AdminDashboardView({
                     </a>
                   )}
                 </div>
-              ))}
+              ))
+              )}
             </div>
           </div>
         )}

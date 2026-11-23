@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
+import { requireAdminAuth } from '@/lib/auth';
 
 export async function PATCH(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireAdminAuth();
+    if (!auth.authorized) return auth.response;
+
     const { id } = await context.params;
     const body = await req.json();
 
@@ -160,6 +164,9 @@ export async function DELETE(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireAdminAuth();
+    if (!auth.authorized) return auth.response;
+
     const { id } = await context.params;
     await prisma.space.delete({ where: { id } });
     revalidatePath('/');

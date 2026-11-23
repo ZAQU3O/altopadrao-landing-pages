@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { prisma, ensureSeeded } from '@/lib/prisma';
+import { requireAdminAuth } from '@/lib/auth';
 
 export async function GET() {
   try {
@@ -20,6 +21,9 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await requireAdminAuth();
+    if (!auth.authorized) return auth.response;
+
     await ensureSeeded();
     const body = await req.json();
     const rawSlug = String(body.slug || body.name || '')

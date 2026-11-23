@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma, ensureSeeded } from '@/lib/prisma';
 import { notificationBus } from '@/lib/events';
+import { requireAdminAuth } from '@/lib/auth';
 
 export async function PATCH(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireAdminAuth();
+    if (!auth.authorized) return auth.response;
+
     await ensureSeeded();
     const { id } = await context.params;
     const body = await req.json();
@@ -75,6 +79,9 @@ export async function DELETE(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireAdminAuth();
+    if (!auth.authorized) return auth.response;
+
     const { id } = await context.params;
     await prisma.reservation.delete({ where: { id } });
     return NextResponse.json({ ok: true });
