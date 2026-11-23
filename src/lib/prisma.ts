@@ -1,41 +1,15 @@
 import { PrismaClient } from '@prisma/client';
 import { INITIAL_SPACES } from './seed-data';
-import fs from 'fs';
-import path from 'path';
 
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
   seedPromise?: Promise<void>;
 };
 
-function getDatabaseUrl(): string | undefined {
-  if (process.env.DATABASE_URL) {
-    return process.env.DATABASE_URL;
-  }
-  if (process.env.VERCEL) {
-    const tmpDb = '/tmp/dev.db';
-    try {
-      if (!fs.existsSync(tmpDb)) {
-        const bundledDb = path.join(process.cwd(), 'prisma', 'dev.db');
-        if (fs.existsSync(bundledDb)) {
-          fs.copyFileSync(bundledDb, tmpDb);
-        }
-      }
-      return `file:${tmpDb}`;
-    } catch {
-      // fallback to default
-    }
-  }
-  return undefined;
-}
-
-const resolvedDbUrl = getDatabaseUrl();
-
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     log: ['error'],
-    ...(resolvedDbUrl ? { datasources: { db: { url: resolvedDbUrl } } } : {}),
   });
 
 if (process.env.NODE_ENV !== 'production') {
