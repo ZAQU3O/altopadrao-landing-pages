@@ -90,6 +90,34 @@ export async function POST(req: NextRequest) {
       capture,
     });
 
+    // Disparo automático de Webhook externo se configurado
+    try {
+      const sysConfig = await prisma.systemConfig.findUnique({
+        where: { id: 'default' },
+      });
+      const targetWebhook = space.webhookUrl || sysConfig?.globalWebhookUrl;
+      if (targetWebhook && targetWebhook.startsWith('http')) {
+        fetch(targetWebhook, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event: 'NOVA_CAPTACAO_IMOVEL',
+            protocol,
+            space: {
+              id: space.id,
+              name: space.name,
+              slug: space.slug,
+              subdomain: space.subdomain,
+            },
+            capture,
+            timestamp: new Date().toISOString(),
+          }),
+        }).catch(() => {});
+      }
+    } catch {
+      // non-blocking webhook
+    }
+
     return NextResponse.json({ capture, notification }, { status: 201 });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

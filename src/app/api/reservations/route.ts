@@ -118,6 +118,34 @@ export async function POST(req: NextRequest) {
       reservation,
     });
 
+    // Disparo automático de Webhook externo (n8n, Zapier, Make, Evolution API, CRM) se configurado
+    try {
+      const sysConfig = await prisma.systemConfig.findUnique({
+        where: { id: 'default' },
+      });
+      const targetWebhook = space.webhookUrl || sysConfig?.globalWebhookUrl;
+      if (targetWebhook && targetWebhook.startsWith('http')) {
+        fetch(targetWebhook, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event: 'NOVA_RESERVA_CONFIRMADA',
+            protocol,
+            space: {
+              id: space.id,
+              name: space.name,
+              slug: space.slug,
+              subdomain: space.subdomain,
+            },
+            reservation,
+            timestamp: new Date().toISOString(),
+          }),
+        }).catch(() => {});
+      }
+    } catch {
+      // non-blocking webhook
+    }
+
     return NextResponse.json({ reservation, notification }, { status: 201 });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

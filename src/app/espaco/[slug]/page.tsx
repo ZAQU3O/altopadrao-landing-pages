@@ -13,11 +13,36 @@ export async function generateMetadata(context: {
   const { slug } = await context.params;
   const space = await prisma.space.findUnique({ where: { slug } });
   if (!space) {
-    return { title: 'Espaço Não Encontrado | AltoPadrão Imobiliária' };
+    return { title: 'Condomínio Não Encontrado | AltoPadrão Imobiliária' };
   }
+  const title = `${space.name} · ${space.offerTitle} ${space.offerBadge} | AltoPadrão Imobiliária`;
+  const description = space.heroSubtitle;
+  const ogImage = space.heroImage || '/images/aldebaran/hero-pool.jpg';
+
   return {
-    title: `${space.name} | AltoPadrão Imobiliária (${space.subdomain})`,
-    description: space.heroSubtitle,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      locale: 'pt_BR',
+      siteName: 'AltoPadrão Imobiliária',
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: space.name,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImage],
+    },
   };
 }
 
@@ -27,12 +52,13 @@ export default async function SpacePage(context: {
   await ensureSeeded();
   const { slug } = await context.params;
 
-  const [space, allSpaces] = await Promise.all([
+  const [space, allSpaces, sysConfig] = await Promise.all([
     prisma.space.findUnique({ where: { slug } }),
     prisma.space.findMany({
       orderBy: { featuredOrder: 'asc' },
       select: { id: true, slug: true, name: true, subdomain: true },
     }),
+    prisma.systemConfig.findUnique({ where: { id: 'default' } }).catch(() => null),
   ]);
 
   if (!space) {
@@ -43,6 +69,7 @@ export default async function SpacePage(context: {
     <SpaceSubdomainView
       space={JSON.parse(JSON.stringify(space))}
       allSpaces={JSON.parse(JSON.stringify(allSpaces))}
+      sysConfig={JSON.parse(JSON.stringify(sysConfig))}
     />
   );
 }

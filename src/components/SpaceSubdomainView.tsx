@@ -3,16 +3,19 @@
 import React, { useState, useEffect } from 'react';
 import SubdomainBar, { SpaceNavInfo } from './SubdomainBar';
 import PropertyCaptureModal from './PropertyCaptureModal';
+import TrackingPixels, { trackLeadConversion } from './TrackingPixels';
 import { CheckCircle2, Sparkles, ShieldCheck, Building } from 'lucide-react';
 
 interface SpaceSubdomainViewProps {
   space: any;
   allSpaces: SpaceNavInfo[];
+  sysConfig?: any;
 }
 
 export default function SpaceSubdomainView({
   space,
   allSpaces,
+  sysConfig,
 }: SpaceSubdomainViewProps) {
   const facts = JSON.parse(space.factsJson || '[]');
   const offerBullets = JSON.parse(space.offerBulletsJson || '[]');
@@ -86,18 +89,28 @@ export default function SpaceSubdomainView({
       const data = await res.json();
       if (res.ok) {
         setConfirmedReservation(data.reservation);
+        trackLeadConversion({
+          type: 'RESERVA',
+          spaceName: space.name,
+          value: data.reservation?.lotValue || space.defaultLotPrice,
+          protocol: data.reservation?.protocol,
+        });
+        if (space.autoOpenWhatsapp !== false && data.reservation) {
+          openWhatsAppWithProtocol(data.reservation);
+        }
       }
     } finally {
       setSubmitting(false);
     }
   };
 
+  const activeWhatsapp =
+    space.whatsappNumber || sysConfig?.globalWhatsapp || '5586900000000';
+
   const openWhatsAppWithProtocol = (resObj: any) => {
     const msg = `Olá! Sou ${resObj.clientName} (${resObj.clientPhone}). Acabei de registrar a Reserva Protocolo ${resObj.protocol} no ${space.name} (${space.subdomain}), metragem: ${resObj.areaInterest}, unidade: ${resObj.lotPreference}. Simulação: Valor R$ ${Number(resObj.lotValue).toLocaleString('pt-BR')} | Entrada R$ ${Number(resObj.downPayment).toLocaleString('pt-BR')} + ${resObj.installments}x de R$ ${Number(resObj.installmentValue).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}. Pode me enviar o mapa de lotes e contrato?`;
     window.open(
-      `https://wa.me/${space.whatsappNumber || '5586900000000'}?text=${encodeURIComponent(
-        msg
-      )}`,
+      `https://wa.me/${activeWhatsapp}?text=${encodeURIComponent(msg)}`,
       '_blank'
     );
   };
@@ -107,6 +120,10 @@ export default function SpaceSubdomainView({
 
   return (
     <div>
+      <TrackingPixels
+        metaPixelId={space.metaPixelId || sysConfig?.globalMetaPixelId}
+        gtmId={space.gtmId || sysConfig?.globalGtmId}
+      />
       <header className={`lp-header ${scrolled ? 's' : ''}`}>
         <div className="bar">
           {space.offerBarText}{' '}
@@ -572,7 +589,7 @@ export default function SpaceSubdomainView({
 
       <a
         className="wa"
-        href={`https://wa.me/${space.whatsappNumber || '5586900000000'}`}
+        href={`https://wa.me/${activeWhatsapp}`}
         target="_blank"
         rel="noopener noreferrer"
       >

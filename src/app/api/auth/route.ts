@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { prisma, ensureSeeded } from '@/lib/prisma';
 
 const COOKIE_NAME = 'altopadrao_admin_session';
 
@@ -34,13 +35,32 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    await ensureSeeded();
     const body = await req.json();
     const email = String(body.email || '').trim().toLowerCase();
     const password = String(body.password || '').trim();
 
-    const matched = VALID_USERS.find(
+    const sysConfig = await prisma.systemConfig.findUnique({
+      where: { id: 'default' },
+    });
+
+    let matched = VALID_USERS.find(
       (u) => u.email.toLowerCase() === email && u.password === password
     );
+
+    if (
+      !matched &&
+      sysConfig &&
+      sysConfig.adminEmail.toLowerCase() === email &&
+      sysConfig.adminPassword === password
+    ) {
+      matched = {
+        email: sysConfig.adminEmail,
+        password: sysConfig.adminPassword,
+        name: 'Diretoria AltoPadrão',
+        role: 'Administrador Geral',
+      };
+    }
 
     if (!matched) {
       return NextResponse.json(

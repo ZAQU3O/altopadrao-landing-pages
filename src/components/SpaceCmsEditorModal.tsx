@@ -47,6 +47,12 @@ export default function SpaceCmsEditorModal({
   const [whatsappNumber, setWhatsappNumber] = useState(
     space.whatsappNumber || '5586900000000'
   );
+  const [metaPixelId, setMetaPixelId] = useState(space.metaPixelId || '');
+  const [gtmId, setGtmId] = useState(space.gtmId || '');
+  const [webhookUrl, setWebhookUrl] = useState(space.webhookUrl || '');
+  const [autoOpenWhatsapp, setAutoOpenWhatsapp] = useState(
+    space.autoOpenWhatsapp !== false
+  );
   const [defaultLotPrice, setDefaultLotPrice] = useState(
     String(space.defaultLotPrice || 350000)
   );
@@ -162,6 +168,10 @@ export default function SpaceCmsEditorModal({
           region,
           developer,
           whatsappNumber,
+          metaPixelId,
+          gtmId,
+          webhookUrl,
+          autoOpenWhatsapp,
           defaultLotPrice: Number(defaultLotPrice),
           defaultDownPayment: Number(defaultDownPayment),
           maxInstallments: Number(maxInstallments),
@@ -552,6 +562,72 @@ export default function SpaceCmsEditorModal({
                     onChange={(e) => setGreenAreaText(e.target.value)}
                     placeholder="Ex: 49 mil m²"
                   />
+                </label>
+              </div>
+
+              {/* Rastreamento de Tráfego Pago (Meta Pixel / GTM) & Automação WhatsApp */}
+              <div
+                style={{
+                  background: 'var(--bg2)',
+                  padding: '14px',
+                  borderRadius: '3px',
+                  border: '1px solid color-mix(in srgb, var(--ink) 16%, transparent)',
+                  display: 'grid',
+                  gap: '12px',
+                  marginTop: '4px',
+                }}
+              >
+                <b style={{ color: 'var(--cu)', fontSize: '0.88rem' }}>
+                  Tráfego Pago (Meta Pixel / Google Tag Manager) & Automação desta Landing Page
+                </b>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr 1.2fr',
+                    gap: '12px',
+                  }}
+                >
+                  <label>
+                    Meta Pixel ID (Facebook / Instagram Ads)
+                    <input
+                      value={metaPixelId}
+                      onChange={(e) => setMetaPixelId(e.target.value)}
+                      placeholder="Ex: 123456789012345"
+                    />
+                  </label>
+                  <label>
+                    Google Tag Manager ID (GTM / Google Ads)
+                    <input
+                      value={gtmId}
+                      onChange={(e) => setGtmId(e.target.value)}
+                      placeholder="Ex: GTM-XXXXXXX"
+                    />
+                  </label>
+                  <label>
+                    Webhook de Notificação Externa (n8n / Zapier / CRM)
+                    <input
+                      value={webhookUrl}
+                      onChange={(e) => setWebhookUrl(e.target.value)}
+                      placeholder="https://seu-webhook.com/leads"
+                    />
+                  </label>
+                </div>
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={autoOpenWhatsapp}
+                    onChange={(e) => setAutoOpenWhatsapp(e.target.checked)}
+                    style={{ width: '18px', height: '18px' }}
+                  />
+                  Redirecionar o cliente automaticamente para o WhatsApp com o protocolo assim que enviar o formulário de reserva
                 </label>
               </div>
             </div>

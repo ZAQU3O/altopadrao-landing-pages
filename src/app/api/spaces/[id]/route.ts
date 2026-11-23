@@ -58,6 +58,13 @@ export async function PATCH(
         ctaLead: body.ctaLead ?? existing.ctaLead,
         footerDisclaimer: body.footerDisclaimer ?? existing.footerDisclaimer,
         whatsappNumber: body.whatsappNumber ?? existing.whatsappNumber,
+        metaPixelId: body.metaPixelId ?? existing.metaPixelId,
+        gtmId: body.gtmId ?? existing.gtmId,
+        webhookUrl: body.webhookUrl ?? existing.webhookUrl,
+        autoOpenWhatsapp:
+          body.autoOpenWhatsapp !== undefined
+            ? Boolean(body.autoOpenWhatsapp)
+            : existing.autoOpenWhatsapp,
         maxInstallments:
           body.maxInstallments !== undefined
             ? Number(body.maxInstallments)

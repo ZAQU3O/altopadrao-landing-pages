@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { X, CheckCircle2, Home, Send } from 'lucide-react';
 import { SpaceNavInfo } from './SubdomainBar';
+import { trackLeadConversion } from './TrackingPixels';
 
 interface PropertyCaptureModalProps {
   isOpen: boolean;
@@ -61,6 +62,12 @@ export default function PropertyCaptureModal({
       const data = await res.json();
       if (res.ok) {
         setCreatedCapture(data.capture);
+        trackLeadConversion({
+          type: 'CAPTACAO',
+          spaceName: data.capture?.space?.name || spaceSlug,
+          value: Number(askingPrice),
+          protocol: data.capture?.protocol,
+        });
       }
     } finally {
       setSubmitting(false);
@@ -153,7 +160,9 @@ export default function PropertyCaptureModal({
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
               <a
                 className="btn"
-                href={`https://wa.me/5586900000000?text=${encodeURIComponent(
+                href={`https://wa.me/${
+                  createdCapture.space?.whatsappNumber || '5586900000000'
+                }?text=${encodeURIComponent(
                   `Olá! Cadastrei meu imóvel para captação na AltoPadrão (Protocolo ${createdCapture.protocol}) no ${createdCapture.space?.name} (${createdCapture.blockAndLot}). Gostaria de agendar a avaliação.`
                 )}`}
                 target="_blank"

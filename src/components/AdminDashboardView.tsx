@@ -50,11 +50,27 @@ export default function AdminDashboardView({
   const [notifications, setNotifications] = useState<any[]>(initialNotifications);
 
   const [activeTab, setActiveTab] = useState<
-    'RESERVAS' | 'RELATORIOS' | 'CAPTACOES' | 'ESPACOS' | 'NOTIFICACOES'
+    | 'RESERVAS'
+    | 'RELATORIOS'
+    | 'CAPTACOES'
+    | 'ESPACOS'
+    | 'NOTIFICACOES'
+    | 'CONFIGURACOES'
   >('RESERVAS');
   const [spaceFilter, setSpaceFilter] = useState<string>('ALL');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [searchTerm, setSearchTerm] = useState<string>('');
+
+  // Global System Settings State
+  const [cfgWhatsapp, setCfgWhatsapp] = useState('5586900000000');
+  const [cfgApplyAllSpaces, setCfgApplyAllSpaces] = useState(true);
+  const [cfgMetaPixel, setCfgMetaPixel] = useState('');
+  const [cfgGtmId, setCfgGtmId] = useState('');
+  const [cfgWebhookUrl, setCfgWebhookUrl] = useState('');
+  const [cfgAdminEmail, setCfgAdminEmail] = useState('admin@altopadraoreservas.com');
+  const [cfgAdminPassword, setCfgAdminPassword] = useState('');
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [settingsSavedMsg, setSettingsSavedMsg] = useState('');
 
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [liveToast, setLiveToast] = useState<any | null>(null);
@@ -155,7 +171,69 @@ export default function AdminDashboardView({
       })
       .catch(() => {})
       .finally(() => setAuthChecked(true));
+
+    fetch('/api/settings')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.config) {
+          setCfgWhatsapp(data.config.globalWhatsapp || '5586900000000');
+          setCfgMetaPixel(data.config.globalMetaPixelId || '');
+          setCfgGtmId(data.config.globalGtmId || '');
+          setCfgWebhookUrl(data.config.globalWebhookUrl || '');
+          setCfgAdminEmail(data.config.adminEmail || 'admin@altopadraoreservas.com');
+        }
+      })
+      .catch(() => {});
   }, []);
+
+  const handleSaveGlobalSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingSettings(true);
+    setSettingsSavedMsg('');
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          globalWhatsapp: cfgWhatsapp,
+          applyWhatsappToAllSpaces: cfgApplyAllSpaces,
+          globalMetaPixelId: cfgMetaPixel,
+          globalGtmId: cfgGtmId,
+          globalWebhookUrl: cfgWebhookUrl,
+          adminEmail: cfgAdminEmail,
+          adminPassword: cfgAdminPassword,
+        }),
+      });
+      if (res.ok) {
+        setCfgAdminPassword('');
+        setSettingsSavedMsg('Configurações salvas e aplicadas com sucesso!');
+        await refreshAllData();
+        setTimeout(() => setSettingsSavedMsg(''), 3500);
+      }
+    } finally {
+      setSavingSettings(false);
+    }
+  };
+
+  const handleDeleteReservation = async (resId: string, protocol: string) => {
+    if (!confirm(`Deseja excluir a reserva ${protocol} permanentemente?`)) return;
+    const res = await fetch(`/api/reservations/${resId}`, {
+      method: 'DELETE',
+    });
+    if (res.ok) {
+      await refreshAllData();
+    }
+  };
+
+  const handleDeleteCapture = async (capId: string, protocol: string) => {
+    if (!confirm(`Deseja excluir a captação ${protocol} permanentemente?`)) return;
+    const res = await fetch(`/api/captures/${capId}`, {
+      method: 'DELETE',
+    });
+    if (res.ok) {
+      await refreshAllData();
+    }
+  };
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -844,6 +922,10 @@ export default function AdminDashboardView({
                 id: 'NOTIFICACOES',
                 label: `Central de Notificações (${notifications.length})`,
               },
+              {
+                id: 'CONFIGURACOES',
+                label: 'Configurações, WhatsApp & Pixels',
+              },
             ].map((t) => (
               <button
                 key={t.id}
@@ -1161,6 +1243,27 @@ export default function AdminDashboardView({
                           >
                             WhatsApp
                           </a>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleDeleteReservation(r.id, r.protocol)
+                            }
+                            style={{
+                              padding: '5px 8px',
+                              fontSize: '0.73rem',
+                              background: 'rgba(239, 68, 68, 0.14)',
+                              color: '#ef4444',
+                              border: '1px solid rgba(239, 68, 68, 0.4)',
+                              cursor: 'pointer',
+                              borderRadius: '2px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                            }}
+                            title="Excluir esta reserva"
+                          >
+                            <Trash2 size={13} />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -1465,27 +1568,49 @@ export default function AdminDashboardView({
                             : 'Somente à vista / Fin. Bancário'}
                         </td>
                         <td>
-                          <select
-                            value={c.status}
-                            onChange={(e) =>
-                              handleUpdateCaptureStatus(c.id, e.target.value)
-                            }
-                            style={{
-                              padding: '6px 10px',
-                              fontSize: '0.78rem',
-                              width: 'auto',
-                              fontWeight: 700,
-                            }}
-                          >
-                            <option value="EM_AVALIACAO">Em Avaliação</option>
-                            <option value="VISTORIA_AGENDADA">
-                              Vistoria Agendada
-                            </option>
-                            <option value="APROVADO_ESTOQUE">
-                              Aprovado no Estoque
-                            </option>
-                            <option value="ARQUIVADO">Arquivado</option>
-                          </select>
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <select
+                              value={c.status}
+                              onChange={(e) =>
+                                handleUpdateCaptureStatus(c.id, e.target.value)
+                              }
+                              style={{
+                                padding: '6px 10px',
+                                fontSize: '0.78rem',
+                                width: 'auto',
+                                fontWeight: 700,
+                              }}
+                            >
+                              <option value="EM_AVALIACAO">Em Avaliação</option>
+                              <option value="VISTORIA_AGENDADA">
+                                Vistoria Agendada
+                              </option>
+                              <option value="APROVADO_ESTOQUE">
+                                Aprovado no Estoque
+                              </option>
+                              <option value="ARQUIVADO">Arquivado</option>
+                            </select>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleDeleteCapture(c.id, c.protocol)
+                              }
+                              style={{
+                                padding: '6px 9px',
+                                background: 'rgba(239, 68, 68, 0.14)',
+                                color: '#ef4444',
+                                border: '1px solid rgba(239, 68, 68, 0.4)',
+                                cursor: 'pointer',
+                                borderRadius: '2px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                              }}
+                              title="Excluir esta captação"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -1817,6 +1942,174 @@ export default function AdminDashboardView({
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* ABA 6: CONFIGURAÇÕES GERAIS, WHATSAPP DA IMOBILIÁRIA, PIXELS & SENHA */}
+        {activeTab === 'CONFIGURACOES' && (
+          <div className="admin-card">
+            <div style={{ marginBottom: '22px' }}>
+              <p className="eyebrow" style={{ color: 'var(--cu)' }}>
+                Configurações Globais do Sistema
+              </p>
+              <h3 style={{ fontSize: '1.85rem' }}>
+                WhatsApp da Imobiliária, Pixels de Tráfego Pago, Webhook & Acesso
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--mut)', margin: 0 }}>
+                Insira aqui o número oficial de WhatsApp da AltoPadrão Imobiliária
+                quando tiver em mãos, além dos IDs globais de Meta Pixel / Google
+                Tag Manager e credenciais de acesso administrativo.
+              </p>
+            </div>
+
+            <form
+              onSubmit={handleSaveGlobalSettings}
+              style={{ display: 'grid', gap: '20px', maxWidth: '860px' }}
+            >
+              <div
+                style={{
+                  background: 'var(--bg)',
+                  padding: '20px',
+                  borderRadius: '3px',
+                  border: '1px solid color-mix(in srgb, var(--ink) 16%, transparent)',
+                  display: 'grid',
+                  gap: '14px',
+                }}
+              >
+                <b style={{ color: '#e9c79b', fontSize: '1rem' }}>
+                  1. WhatsApp Oficial de Plantão da Imobiliária
+                </b>
+                <label>
+                  Número do WhatsApp (com DDI 55 + DDD, apenas números)
+                  <input
+                    value={cfgWhatsapp}
+                    onChange={(e) => setCfgWhatsapp(e.target.value)}
+                    placeholder="Ex: 5586999990000"
+                  />
+                </label>
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    cursor: 'pointer',
+                    fontSize: '0.86rem',
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={cfgApplyAllSpaces}
+                    onChange={(e) => setCfgApplyAllSpaces(e.target.checked)}
+                    style={{ width: '18px', height: '18px' }}
+                  />
+                  Atualizar também o WhatsApp de todas as Landing Pages existentes com este número ao salvar
+                </label>
+              </div>
+
+              <div
+                style={{
+                  background: 'var(--bg)',
+                  padding: '20px',
+                  borderRadius: '3px',
+                  border: '1px solid color-mix(in srgb, var(--ink) 16%, transparent)',
+                  display: 'grid',
+                  gap: '14px',
+                }}
+              >
+                <b style={{ color: '#e9c79b', fontSize: '1rem' }}>
+                  2. Rastreamento Global (Meta Pixel / Google Tag Manager) & Webhook de Leads
+                </b>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '14px',
+                  }}
+                >
+                  <label>
+                    Meta Pixel ID Global (Facebook / Instagram Ads)
+                    <input
+                      value={cfgMetaPixel}
+                      onChange={(e) => setCfgMetaPixel(e.target.value)}
+                      placeholder="Ex: 123456789012345"
+                    />
+                  </label>
+                  <label>
+                    Google Tag Manager ID Global (GTM / Google Ads)
+                    <input
+                      value={cfgGtmId}
+                      onChange={(e) => setCfgGtmId(e.target.value)}
+                      placeholder="Ex: GTM-XXXXXXX"
+                    />
+                  </label>
+                </div>
+                <label>
+                  URL de Webhook Global (Recebe POST JSON a cada nova Reserva ou Captação)
+                  <input
+                    value={cfgWebhookUrl}
+                    onChange={(e) => setCfgWebhookUrl(e.target.value)}
+                    placeholder="https://seu-n8n-ou-crm.com/webhook/altopadrao"
+                  />
+                </label>
+              </div>
+
+              <div
+                style={{
+                  background: 'var(--bg)',
+                  padding: '20px',
+                  borderRadius: '3px',
+                  border: '1px solid color-mix(in srgb, var(--ink) 16%, transparent)',
+                  display: 'grid',
+                  gap: '14px',
+                }}
+              >
+                <b style={{ color: '#e9c79b', fontSize: '1rem' }}>
+                  3. Credenciais de Acesso à Área Administrativa (/admin)
+                </b>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '14px',
+                  }}
+                >
+                  <label>
+                    E-mail do Administrador
+                    <input
+                      type="email"
+                      value={cfgAdminEmail}
+                      onChange={(e) => setCfgAdminEmail(e.target.value)}
+                    />
+                  </label>
+                  <label>
+                    Nova Senha (deixe em branco para manter a senha atual)
+                    <input
+                      type="password"
+                      value={cfgAdminPassword}
+                      onChange={(e) => setCfgAdminPassword(e.target.value)}
+                      placeholder="Digite apenas se desejar alterar a senha"
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <button
+                  type="submit"
+                  className="btn"
+                  disabled={savingSettings}
+                >
+                  {savingSettings
+                    ? 'Salvando Configurações...'
+                    : 'Salvar Configurações Globais'}
+                </button>
+                {settingsSavedMsg && (
+                  <span style={{ color: '#4ade80', fontWeight: 700, fontSize: '0.88rem' }}>
+                    ✓ {settingsSavedMsg}
+                  </span>
+                )}
+              </div>
+            </form>
           </div>
         )}
       </div>

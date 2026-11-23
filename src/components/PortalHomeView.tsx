@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import SubdomainBar, { SpaceNavInfo } from './SubdomainBar';
 import PropertyCaptureModal from './PropertyCaptureModal';
+import TrackingPixels, { trackLeadConversion } from './TrackingPixels';
 import {
   ArrowUpRight,
   ArrowRight,
@@ -16,6 +17,7 @@ import {
 
 interface PortalHomeViewProps {
   spaces: any[];
+  sysConfig?: any;
   stats: {
     totalSpaces: number;
     totalConfirmedVgv: number;
@@ -24,7 +26,11 @@ interface PortalHomeViewProps {
   };
 }
 
-export default function PortalHomeView({ spaces }: PortalHomeViewProps) {
+export default function PortalHomeView({
+  spaces,
+  sysConfig,
+}: PortalHomeViewProps) {
+  const globalWhatsapp = sysConfig?.globalWhatsapp || '5586900000000';
   const [scrolled, setScrolled] = useState(false);
   const [selectedSlug, setSelectedSlug] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -125,6 +131,21 @@ export default function PortalHomeView({ spaces }: PortalHomeViewProps) {
       const data = await res.json();
       if (res.ok) {
         setConfirmedRes(data.reservation);
+        trackLeadConversion({
+          type: 'RESERVA',
+          spaceName: quickReserveSpace.name,
+          value: quickReserveSpace.defaultLotPrice,
+          protocol: data.reservation?.protocol,
+        });
+        if (quickReserveSpace.autoOpenWhatsapp !== false && data.reservation) {
+          const targetWa =
+            quickReserveSpace.whatsappNumber || globalWhatsapp;
+          const text = `Olá! Sou ${data.reservation.clientName} (${data.reservation.clientPhone}). Solicitei a tabela e reserva (${data.reservation.protocol}) para o ${quickReserveSpace.name}.`;
+          window.open(
+            `https://wa.me/${targetWa}?text=${encodeURIComponent(text)}`,
+            '_blank'
+          );
+        }
       }
     } finally {
       setSubmitting(false);
@@ -133,6 +154,10 @@ export default function PortalHomeView({ spaces }: PortalHomeViewProps) {
 
   return (
     <div>
+      <TrackingPixels
+        metaPixelId={sysConfig?.globalMetaPixelId}
+        gtmId={sysConfig?.globalGtmId}
+      />
       <header className={`lp-header ${scrolled ? 's' : ''}`}>
         <div className="bar">
           Condições especiais de lançamento · Entrada parcelada + até 72x direto com a construtora{' '}
@@ -617,7 +642,7 @@ export default function PortalHomeView({ spaces }: PortalHomeViewProps) {
 
       <a
         className="wa"
-        href="https://wa.me/5586900000000"
+        href={`https://wa.me/${globalWhatsapp}`}
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -660,7 +685,9 @@ export default function PortalHomeView({ spaces }: PortalHomeViewProps) {
                 <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
                   <a
                     className="btn"
-                    href={`https://wa.me/5586900000000?text=${encodeURIComponent(
+                    href={`https://wa.me/${
+                      quickReserveSpace.whatsappNumber || globalWhatsapp
+                    }?text=${encodeURIComponent(
                       `Olá! Solicitei a tabela e reserva (${confirmedRes.protocol}) para o ${quickReserveSpace.name}.`
                     )}`}
                     target="_blank"

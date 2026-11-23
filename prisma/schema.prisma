@@ -32,6 +32,10 @@ model Space {
   ctaLead            String
   footerDisclaimer   String
   whatsappNumber     String            @default("5586900000000")
+  metaPixelId        String            @default("")
+  gtmId              String            @default("")
+  webhookUrl         String            @default("")
+  autoOpenWhatsapp   Boolean           @default(true)
   accentColor        String            @default("#a8582f")
   deepColor          String            @default("#16302e")
   maxInstallments    Int               @default(60)
@@ -122,5 +126,16 @@ model Notification {
   channelsSent  String   @default("PAINEL_REALTIME,WHATSAPP_QUEUE,EMAIL_LOG")
   read          Boolean  @default(false)
   createdAt     DateTime @default(now())
+}
+
+model SystemConfig {
+  id                String   @id @default("default")
+  globalWhatsapp    String   @default("5586900000000")
+  globalMetaPixelId String   @default("")
+  globalGtmId       String   @default("")
+  globalWebhookUrl  String   @default("")
+  adminEmail        String   @default("admin@altopadraoreservas.com")
+  adminPassword     String   @default("altopadrao2026")
+  updatedAt         DateTime @updatedAt
 }
 
