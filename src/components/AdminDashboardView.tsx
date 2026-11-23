@@ -894,90 +894,127 @@ export default function AdminDashboardView({
         </div>
       </div>
 
-      {/* Sub-navigation Tabs + Space Filter */}
-      <div
-        style={{
-          background: 'var(--bg2)',
-          borderBottom: '1px solid color-mix(in srgb, var(--ink) 16%, transparent)',
-          padding: '12px 0',
-        }}
-      >
-        <div
-          className="wrap-wide"
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '14px',
-          }}
-        >
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            {[
-              { id: 'RESERVAS', label: `Reservas & Transações (${reservations.length})` },
-              { id: 'ESPACOS', label: `Landing Pages, Textos & Imagens (${spaces.length})` },
-              { id: 'RELATORIOS', label: 'Relatórios Detalhados & VGV' },
-              { id: 'CAPTACOES', label: `Captação de Imóveis (${captures.length})` },
-              {
-                id: 'NOTIFICACOES',
-                label: `Central de Notificações (${notifications.length})`,
-              },
-              {
-                id: 'CONFIGURACOES',
-                label: 'Configurações, WhatsApp & Pixels',
-              },
-            ].map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setActiveTab(t.id as any)}
-                style={{
-                  padding: '10px 16px',
-                  borderRadius: '2px',
-                  border:
-                    activeTab === t.id
-                      ? '1.5px solid var(--cu)'
-                      : '1px solid color-mix(in srgb, var(--ink) 20%, transparent)',
-                  background: activeTab === t.id ? 'var(--cu)' : 'var(--bg)',
-                  color: activeTab === t.id ? '#fff' : 'var(--ink)',
-                  fontWeight: 700,
-                  fontSize: '0.84rem',
-                  cursor: 'pointer',
-                }}
-              >
-                {t.label}
-              </button>
-            ))}
+      {/* Layout com Menu Lateral (Sidebar) + Área Principal */}
+      <div className="wrap-wide admin-layout">
+        <aside className="admin-sidebar">
+          <div>
+            <div
+              style={{
+                fontSize: '0.7rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.16em',
+                color: 'var(--cu)',
+                fontWeight: 700,
+                padding: '0 6px 8px',
+              }}
+            >
+              Navegação do Painel
+            </div>
+
+            <nav className="admin-nav-list">
+              {[
+                {
+                  id: 'RESERVAS',
+                  label: 'Reservas & Transações',
+                  count: reservations.length,
+                  icon: <DollarSign size={16} />,
+                },
+                {
+                  id: 'ESPACOS',
+                  label: 'Landing Pages & CMS',
+                  count: spaces.length,
+                  icon: <Globe size={16} />,
+                },
+                {
+                  id: 'RELATORIOS',
+                  label: 'Relatórios & VGV',
+                  count: null,
+                  icon: <TrendingUp size={16} />,
+                },
+                {
+                  id: 'CAPTACOES',
+                  label: 'Captação de Imóveis',
+                  count: captures.length,
+                  icon: <Building2 size={16} />,
+                },
+                {
+                  id: 'NOTIFICACOES',
+                  label: 'Notificações',
+                  count: notifications.length,
+                  icon: <Bell size={16} />,
+                },
+                {
+                  id: 'CONFIGURACOES',
+                  label: 'WhatsApp, Pixels & Senha',
+                  count: null,
+                  icon: <ShieldCheck size={16} />,
+                },
+              ].map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setActiveTab(t.id as any)}
+                  className={`admin-nav-btn ${activeTab === t.id ? 'active' : ''}`}
+                >
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                    }}
+                  >
+                    {t.icon}
+                    <span>{t.label}</span>
+                  </span>
+                  {t.count !== null && (
+                    <span className="admin-nav-count">{t.count}</span>
+                  )}
+                </button>
+              ))}
+            </nav>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--mut)' }}>
-              Espaço Conectado:
+          <div
+            style={{
+              borderTop: '1px solid color-mix(in srgb, var(--ink) 16%, transparent)',
+              paddingTop: '14px',
+              display: 'grid',
+              gap: '8px',
+            }}
+          >
+            <span
+              style={{
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                color: 'var(--mut)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+              }}
+            >
+              Filtrar por Condomínio:
             </span>
             <select
               value={spaceFilter}
               onChange={(e) => setSpaceFilter(e.target.value)}
               style={{
-                width: 'auto',
-                minWidth: '240px',
-                padding: '8px 12px',
-                fontSize: '0.84rem',
+                width: '100%',
+                padding: '9px 11px',
+                fontSize: '0.83rem',
                 fontWeight: 700,
               }}
             >
-              <option value="ALL">Todos os Espaços Conectados ({spaces.length})</option>
+              <option value="ALL">Todos os Espaços ({spaces.length})</option>
               {spaces.map((sp) => (
                 <option key={sp.id} value={sp.id}>
-                  {sp.name} ({sp.subdomain})
+                  {sp.name}
                 </option>
               ))}
             </select>
           </div>
-        </div>
-      </div>
+        </aside>
 
-      <div className="wrap-wide" style={{ paddingBottom: '64px' }}>
-        {/* KPIs Consolidados no Topo */}
+        <div className="admin-main">
+          {/* KPIs Consolidados no Topo */}
         <div className="admin-kpi-grid">
           <div className="admin-kpi-card">
             <div className="kpi-label">VGV de Reservas Confirmadas</div>
@@ -2112,6 +2149,7 @@ export default function AdminDashboardView({
             </form>
           </div>
         )}
+        </div>
       </div>
 
       {/* Modal: Criar Novo Espaço + Subdomínio */}
