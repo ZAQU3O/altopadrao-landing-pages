@@ -85,7 +85,7 @@ p {
 }
 
 .wrap-wide {
-  width: min(1340px, 100% - 40px);
+  width: min(1460px, 100% - 32px);
   margin-inline: auto;
 }
 
@@ -1030,8 +1030,8 @@ footer.lp-footer p {
 
 .admin-layout {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
-  gap: 28px;
+  grid-template-columns: 245px minmax(0, 1fr);
+  gap: 22px;
   align-items: start;
   padding-top: 26px;
   padding-bottom: 64px;
@@ -1161,32 +1161,41 @@ footer.lp-footer p {
 }
 
 .admin-table-wrap {
-  overflow-x: auto;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+@media (max-width: 960px) {
+  .admin-table-wrap {
+    overflow-x: auto;
+  }
 }
 
 table.admin-table {
   width: 100%;
+  table-layout: auto;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   background: var(--bg);
   color: var(--ink);
 }
 
 table.admin-table th {
   text-align: left;
-  padding: 12px 14px;
+  padding: 11px 10px;
   background: var(--deep);
   color: var(--on);
-  font-size: 0.76rem;
+  font-size: 0.73rem;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.06em;
   border-bottom: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
 }
 
 table.admin-table td {
-  padding: 14px;
+  padding: 12px 10px;
   border-bottom: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
   vertical-align: middle;
+  word-break: break-word;
 }
 
 table.admin-table tr:hover td {

@@ -1121,63 +1121,53 @@ export default function AdminDashboardView({
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>Protocolo / Data</th>
-                    <th>Espaço / Subdomínio</th>
+                    <th>Protocolo & Condomínio</th>
                     <th>Cliente & Contato</th>
                     <th>Unidade & Metragem</th>
-                    <th>Transação (Valor / Entrada / Parcelas)</th>
-                    <th>Status Reserva</th>
-                    <th>Estágio Financeiro</th>
-                    <th>Ações Rápidas</th>
+                    <th>Transação</th>
+                    <th>Status & Estágio Financeiro</th>
+                    <th>Ações</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredReservations.map((r) => (
                     <tr key={r.id}>
                       <td>
-                        <b style={{ color: '#e9c79b', fontFamily: 'monospace' }}>
-                          {r.protocol}
-                        </b>
-                        <div style={{ fontSize: '0.76rem', color: 'var(--mut)' }}>
-                          {new Date(r.createdAt).toLocaleString('pt-BR', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                          <b style={{ color: '#e9c79b', fontFamily: 'monospace' }}>
+                            {r.protocol}
+                          </b>
+                          <span style={{ fontSize: '0.73rem', color: 'var(--mut)' }}>
+                            {new Date(r.createdAt).toLocaleString('pt-BR', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </span>
                         </div>
-                      </td>
-
-                      <td>
-                        <b>{r.space?.name}</b>
-                        <div
-                          style={{
-                            fontSize: '0.73rem',
-                            fontFamily: 'monospace',
-                            color: 'var(--cu)',
-                          }}
-                        >
-                          {r.sourceHost}
+                        <div style={{ fontWeight: 700, marginTop: '2px' }}>
+                          {r.space?.name}
                         </div>
                       </td>
 
                       <td>
                         <b>{r.clientName}</b>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--mut)' }}>
+                        <div style={{ fontSize: '0.78rem', color: 'var(--mut)' }}>
                           {r.clientPhone}
                         </div>
                       </td>
 
                       <td>
                         <b>{r.lotPreference}</b>
-                        <div style={{ fontSize: '0.78rem', color: 'var(--mut)' }}>
+                        <div style={{ fontSize: '0.76rem', color: 'var(--mut)' }}>
                           {r.areaInterest}
                         </div>
                       </td>
 
                       <td>
-                        <b style={{ fontSize: '0.98rem' }}>{fmtBRL(r.lotValue)}</b>
-                        <div style={{ fontSize: '0.78rem', color: 'var(--mut)' }}>
+                        <b style={{ fontSize: '0.95rem' }}>{fmtBRL(r.lotValue)}</b>
+                        <div style={{ fontSize: '0.76rem', color: 'var(--mut)' }}>
                           Entrada {fmtBRL(r.downPayment)} + {r.installments}x de{' '}
                           {Number(r.installmentValue).toLocaleString('pt-BR', {
                             style: 'currency',
@@ -1187,53 +1177,52 @@ export default function AdminDashboardView({
                       </td>
 
                       <td>
-                        <span
-                          className={`badge ${String(r.status).toLowerCase()}`}
-                        >
-                          {r.status}
-                        </span>
+                        <div style={{ display: 'grid', gap: '6px', justifyItems: 'start' }}>
+                          <span
+                            className={`badge ${String(r.status).toLowerCase()}`}
+                          >
+                            {r.status}
+                          </span>
+                          <select
+                            value={r.paymentStatus}
+                            onChange={(e) =>
+                              handleUpdateReservationStatus(
+                                r.id,
+                                r.status,
+                                e.target.value
+                              )
+                            }
+                            style={{
+                              padding: '4px 8px',
+                              fontSize: '0.75rem',
+                              width: 'auto',
+                            }}
+                          >
+                            <option value="AGUARDANDO_ENTRADA">
+                              Aguardando Entrada
+                            </option>
+                            <option value="SINAL_RESERVA_SOLICITADO">
+                              Sinal Solicitado
+                            </option>
+                            <option value="SINAL_PAGO">Sinal Pago</option>
+                            <option value="ENTRADA_QUITADA">Entrada Quitada</option>
+                            <option value="CONTRATO_ASSINADO">
+                              Contrato Assinado
+                            </option>
+                          </select>
+                        </div>
                       </td>
 
                       <td>
-                        <select
-                          value={r.paymentStatus}
-                          onChange={(e) =>
-                            handleUpdateReservationStatus(
-                              r.id,
-                              r.status,
-                              e.target.value
-                            )
-                          }
-                          style={{
-                            padding: '5px 8px',
-                            fontSize: '0.76rem',
-                            width: 'auto',
-                          }}
-                        >
-                          <option value="AGUARDANDO_ENTRADA">
-                            Aguardando Entrada
-                          </option>
-                          <option value="SINAL_RESERVA_SOLICITADO">
-                            Sinal Solicitado
-                          </option>
-                          <option value="SINAL_PAGO">Sinal Pago</option>
-                          <option value="ENTRADA_QUITADA">Entrada Quitada</option>
-                          <option value="CONTRATO_ASSINADO">
-                            Contrato Assinado
-                          </option>
-                        </select>
-                      </td>
-
-                      <td>
-                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
                           {r.status !== 'CONFIRMADA' ? (
                             <button
                               type="button"
                               onClick={() => handleConfirmReservation(r.id)}
                               className="btn"
                               style={{
-                                padding: '6px 10px',
-                                fontSize: '0.75rem',
+                                padding: '5px 9px',
+                                fontSize: '0.74rem',
                                 background: '#1f9d55',
                               }}
                             >
@@ -1244,7 +1233,7 @@ export default function AdminDashboardView({
                               type="button"
                               onClick={() => handleConfirmReservation(r.id)}
                               style={{
-                                padding: '5px 9px',
+                                padding: '5px 8px',
                                 fontSize: '0.73rem',
                                 background: 'var(--bg2)',
                                 color: 'var(--ink)',
@@ -1364,10 +1353,7 @@ export default function AdminDashboardView({
                   <thead>
                     <tr>
                       <th>Espaço / Empreendimento</th>
-                      <th>Subdomínio Conectado</th>
-                      <th>Reservas Totais</th>
-                      <th>Confirmadas</th>
-                      <th>Taxa Conversão</th>
+                      <th>Reservas & Conversão</th>
                       <th>VGV Confirmado</th>
                       <th>Total Entradas</th>
                       <th>Carteira Parcelada</th>
@@ -1401,25 +1387,17 @@ export default function AdminDashboardView({
                         <tr key={sp.id}>
                           <td>
                             <b>{sp.name}</b>
-                            <div style={{ fontSize: '0.76rem', color: 'var(--mut)' }}>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--mut)' }}>
                               {sp.developer}
                             </div>
                           </td>
                           <td>
-                            <code style={{ fontSize: '0.78rem', color: 'var(--cu)' }}>
-                              {sp.subdomain}
-                            </code>
-                          </td>
-                          <td>
-                            <b>{spRes.length}</b>
-                          </td>
-                          <td>
-                            <span className="badge confirmada">
-                              {spConf.length} confirmadas
-                            </span>
-                          </td>
-                          <td>
-                            <b>{convRate}%</b>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                              <span className="badge confirmada">
+                                {spConf.length}/{spRes.length} confirmadas
+                              </span>
+                              <b>({convRate}%)</b>
+                            </div>
                           </td>
                           <td>
                             <b style={{ color: '#e9c79b' }}>{fmtBRL(spVgv)}</b>
@@ -1544,13 +1522,12 @@ export default function AdminDashboardView({
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>Protocolo</th>
-                    <th>Condomínio / Espaço</th>
+                    <th>Protocolo & Condomínio</th>
                     <th>Proprietário & Contato</th>
                     <th>Tipo & Localização</th>
                     <th>Área / Valor Pretendido</th>
                     <th>Condição</th>
-                    <th>Status da Captação</th>
+                    <th>Status & Ações</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1561,12 +1538,11 @@ export default function AdminDashboardView({
                     .map((c) => (
                       <tr key={c.id}>
                         <td>
-                          <b style={{ fontFamily: 'monospace' }}>{c.protocol}</b>
-                        </td>
-                        <td>
-                          <b>{c.space?.name}</b>
-                          <div style={{ fontSize: '0.75rem', color: 'var(--mut)' }}>
-                            {c.sourceHost}
+                          <b style={{ fontFamily: 'monospace', color: '#e9c79b' }}>
+                            {c.protocol}
+                          </b>
+                          <div style={{ fontWeight: 700, marginTop: '2px' }}>
+                            {c.space?.name}
                           </div>
                         </td>
                         <td>
