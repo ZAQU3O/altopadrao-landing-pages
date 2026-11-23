@@ -1124,7 +1124,7 @@ export default function AdminDashboardView({
                   ) : (
                     filteredReservations.map((r) => (
                     <tr key={r.id}>
-                      <td>
+                      <td data-label="Protocolo & Condomínio">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                           <b style={{ color: '#e9c79b', fontFamily: 'monospace' }}>
                             {r.protocol}
@@ -1143,21 +1143,21 @@ export default function AdminDashboardView({
                         </div>
                       </td>
 
-                      <td>
+                      <td data-label="Cliente & Contato">
                         <b>{r.clientName}</b>
                         <div style={{ fontSize: '0.78rem', color: 'var(--mut)' }}>
                           {r.clientPhone}
                         </div>
                       </td>
 
-                      <td>
+                      <td data-label="Unidade & Metragem">
                         <b>{r.lotPreference}</b>
                         <div style={{ fontSize: '0.76rem', color: 'var(--mut)' }}>
                           {r.areaInterest}
                         </div>
                       </td>
 
-                      <td>
+                      <td data-label="Transação">
                         <b style={{ fontSize: '0.95rem' }}>{fmtBRL(r.lotValue)}</b>
                         <div style={{ fontSize: '0.76rem', color: 'var(--mut)' }}>
                           Entrada {fmtBRL(r.downPayment)} + {r.installments}x de{' '}
@@ -1168,7 +1168,7 @@ export default function AdminDashboardView({
                         </div>
                       </td>
 
-                      <td>
+                      <td data-label="Status & Estágio Financeiro">
                         <div style={{ display: 'grid', gap: '6px', justifyItems: 'start' }}>
                           <span
                             className={`badge ${String(r.status).toLowerCase()}`}
@@ -1205,7 +1205,7 @@ export default function AdminDashboardView({
                         </div>
                       </td>
 
-                      <td>
+                      <td data-label="Ações">
                         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
                           {r.status !== 'CONFIRMADA' ? (
                             <button
@@ -1378,13 +1378,13 @@ export default function AdminDashboardView({
 
                       return (
                         <tr key={sp.id}>
-                          <td>
+                          <td data-label="Espaço / Empreendimento">
                             <b>{sp.name}</b>
                             <div style={{ fontSize: '0.75rem', color: 'var(--mut)' }}>
                               {sp.developer}
                             </div>
                           </td>
-                          <td>
+                          <td data-label="Reservas & Conversão">
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                               <span className="badge confirmada">
                                 {spConf.length}/{spRes.length} confirmadas
@@ -1392,12 +1392,12 @@ export default function AdminDashboardView({
                               <b>({convRate}%)</b>
                             </div>
                           </td>
-                          <td>
+                          <td data-label="VGV Confirmado">
                             <b style={{ color: '#e9c79b' }}>{fmtBRL(spVgv)}</b>
                           </td>
-                          <td>{fmtBRL(spEntry)}</td>
-                          <td>{fmtBRL(spParcelado)}</td>
-                          <td>
+                          <td data-label="Total Entradas">{fmtBRL(spEntry)}</td>
+                          <td data-label="Carteira Parcelada">{fmtBRL(spParcelado)}</td>
+                          <td data-label="Imóveis Captados">
                             <b>{spCaps.length}</b> (
                             {fmtBRL(
                               spCaps.reduce(
@@ -1546,7 +1546,7 @@ export default function AdminDashboardView({
                       )
                       .map((c) => (
                       <tr key={c.id}>
-                        <td>
+                        <td data-label="Protocolo & Condomínio">
                           <b style={{ fontFamily: 'monospace', color: '#e9c79b' }}>
                             {c.protocol}
                           </b>
@@ -1554,13 +1554,13 @@ export default function AdminDashboardView({
                             {c.space?.name}
                           </div>
                         </td>
-                        <td>
+                        <td data-label="Proprietário & Contato">
                           <b>{c.ownerName}</b>
                           <div style={{ fontSize: '0.8rem', color: 'var(--mut)' }}>
                             {c.ownerPhone}
                           </div>
                         </td>
-                        <td>
+                        <td data-label="Tipo & Localização">
                           <b>{c.propertyType}</b>
                           <div style={{ fontSize: '0.8rem', color: 'var(--cu)' }}>
                             {c.blockAndLot}
@@ -1577,19 +1577,19 @@ export default function AdminDashboardView({
                             </div>
                           )}
                         </td>
-                        <td>
+                        <td data-label="Área / Valor Pretendido">
                           <b>{fmtBRL(c.askingPrice)}</b>
                           <div style={{ fontSize: '0.78rem', color: 'var(--mut)' }}>
                             {c.areaM2} m² (
                             {fmtBRL(Math.round(c.askingPrice / c.areaM2))}/m²)
                           </div>
                         </td>
-                        <td>
+                        <td data-label="Condição">
                           {c.acceptsDirectFin
                             ? 'Aceita Parcelamento / Permuta'
                             : 'Somente à vista / Fin. Bancário'}
                         </td>
-                        <td>
+                        <td data-label="Status & Ações">
                           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                             <select
                               value={c.status}

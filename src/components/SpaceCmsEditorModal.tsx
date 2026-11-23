@@ -427,13 +427,7 @@ export default function SpaceCmsEditorModal({
           {/* ABA 1: DADOS GERAIS, SUBDOMÍNIO & VALORES */}
           {cmsTab === 'GERAL' && (
             <div style={{ display: 'grid', gap: '14px' }}>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1.2fr 0.8fr',
-                  gap: '14px',
-                }}
-              >
+              <div className="form-grid-2">
                 <label>
                   Nome Comercial do Empreendimento
                   <input
@@ -460,13 +454,7 @@ export default function SpaceCmsEditorModal({
                 </label>
               </div>
 
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr 1fr',
-                  gap: '14px',
-                }}
-              >
+              <div className="form-grid-3">
                 <label>
                   Região / Localização Curta
                   <input
@@ -491,13 +479,7 @@ export default function SpaceCmsEditorModal({
                 </label>
               </div>
 
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(3, 1fr)',
-                  gap: '14px',
-                }}
-              >
+              <div className="form-grid-3">
                 <label>
                   Valor Padrão do Lote no Simulador (R$)
                   <input
@@ -524,13 +506,7 @@ export default function SpaceCmsEditorModal({
                 </label>
               </div>
 
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(4, 1fr)',
-                  gap: '14px',
-                }}
-              >
+              <div className="form-grid-4">
                 <label>
                   Total de Lotes do Condomínio
                   <input
@@ -580,13 +556,7 @@ export default function SpaceCmsEditorModal({
                 <b style={{ color: 'var(--cu)', fontSize: '0.88rem' }}>
                   Tráfego Pago (Meta Pixel / Google Tag Manager) & Automação desta Landing Page
                 </b>
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr 1.2fr',
-                    gap: '12px',
-                  }}
-                >
+                <div className="form-grid-3">
                   <label>
                     Meta Pixel ID (Facebook / Instagram Ads)
                     <input

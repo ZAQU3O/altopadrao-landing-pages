@@ -4,7 +4,16 @@ import React, { useState, useEffect } from 'react';
 import SubdomainBar, { SpaceNavInfo } from './SubdomainBar';
 import PropertyCaptureModal from './PropertyCaptureModal';
 import TrackingPixels, { trackLeadConversion } from './TrackingPixels';
-import { CheckCircle2, Sparkles, ShieldCheck, Building } from 'lucide-react';
+import {
+  CheckCircle2,
+  Sparkles,
+  ShieldCheck,
+  Building,
+  Menu,
+  X,
+  ArrowRight,
+  ArrowUpRight,
+} from 'lucide-react';
 
 interface SpaceSubdomainViewProps {
   space: any;
@@ -27,6 +36,7 @@ export default function SpaceSubdomainView({
   const areaOptions = JSON.parse(space.areaOptionsJson || '["450 a 500 m²"]');
 
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [lotValue, setLotValue] = useState<string>(String(space.defaultLotPrice || 350000));
   const [downPayment, setDownPayment] = useState<string>(
     String(space.defaultDownPayment || 70000)
@@ -170,7 +180,48 @@ export default function SpaceSubdomainView({
             <a className="btn" href="#contato">
               Reservar unidade
             </a>
+            <button
+              type="button"
+              className="mobile-menu-btn"
+              aria-label="Abrir menu"
+              onClick={() => setMobileMenuOpen((v) => !v)}
+            >
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
           </nav>
+        </div>
+
+        <div className={`mobile-drawer ${mobileMenuOpen ? 'open' : ''}`}>
+          <a href="#projeto" onClick={() => setMobileMenuOpen(false)}>
+            <span>O projeto</span>
+            <ArrowRight size={15} />
+          </a>
+          <a href="#lazer" onClick={() => setMobileMenuOpen(false)}>
+            <span>Lazer</span>
+            <ArrowRight size={15} />
+          </a>
+          <a href="#bem-estar" onClick={() => setMobileMenuOpen(false)}>
+            <span>Spa & Bem-estar</span>
+            <ArrowRight size={15} />
+          </a>
+          <a href="#local" onClick={() => setMobileMenuOpen(false)}>
+            <span>Localização</span>
+            <ArrowRight size={15} />
+          </a>
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setCaptureModalOpen(true);
+            }}
+          >
+            <span>Anunciar Lote</span>
+            <ArrowRight size={15} />
+          </button>
+          <a href="/admin" onClick={() => setMobileMenuOpen(false)}>
+            <span style={{ color: '#e9c79b' }}>Área Administrativa</span>
+            <ArrowUpRight size={15} />
+          </a>
         </div>
       </header>
 
@@ -595,6 +646,24 @@ export default function SpaceSubdomainView({
       >
         WhatsApp Plantão
       </a>
+
+      {/* Barra Fixa Inferior Mobile (Thumb-Zone UX) */}
+      <div className="mobile-bottom-dock">
+        <a href="#contato" className="btn" style={{ padding: '10px 12px' }}>
+          Simular e Reservar
+        </a>
+        <a
+          href={`https://wa.me/${activeWhatsapp}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            background: '#1f9d55',
+            color: '#fff',
+          }}
+        >
+          WhatsApp Plantão
+        </a>
+      </div>
 
       <PropertyCaptureModal
         isOpen={captureModalOpen}

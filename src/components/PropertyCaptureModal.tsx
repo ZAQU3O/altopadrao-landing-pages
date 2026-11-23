@@ -188,7 +188,7 @@ export default function PropertyCaptureModal({
               qualificados.
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div className="form-grid-2">
               <label>
                 Condomínio / Espaço
                 <select
@@ -217,7 +217,7 @@ export default function PropertyCaptureModal({
               </label>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div className="form-grid-2">
               <label>
                 Nome do Proprietário
                 <input
@@ -240,7 +240,7 @@ export default function PropertyCaptureModal({
               </label>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr 1fr', gap: '12px' }}>
+            <div className="form-grid-3">
               <label>
                 Quadra e Lote / Localização
                 <input

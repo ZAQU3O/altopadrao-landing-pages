@@ -13,6 +13,8 @@ import {
   Award,
   KeyRound,
   Handshake,
+  Menu,
+  X,
 } from 'lucide-react';
 
 interface PortalHomeViewProps {
@@ -32,6 +34,7 @@ export default function PortalHomeView({
 }: PortalHomeViewProps) {
   const globalWhatsapp = sysConfig?.globalWhatsapp || '5586900000000';
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedSlug, setSelectedSlug] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [captureModalOpen, setCaptureModalOpen] = useState(false);
@@ -198,7 +201,40 @@ export default function PortalHomeView({
             <a className="btn" href="#espacos">
               Escolher Condomínio
             </a>
+            <button
+              type="button"
+              className="mobile-menu-btn"
+              aria-label="Abrir menu"
+              onClick={() => setMobileMenuOpen((v) => !v)}
+            >
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
           </nav>
+        </div>
+
+        <div className={`mobile-drawer ${mobileMenuOpen ? 'open' : ''}`}>
+          <a href="#espacos" onClick={() => setMobileMenuOpen(false)}>
+            <span>Condomínios</span>
+            <ArrowRight size={15} />
+          </a>
+          <a href="#comparativo" onClick={() => setMobileMenuOpen(false)}>
+            <span>Comparar Lotes</span>
+            <ArrowRight size={15} />
+          </a>
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setCaptureModalOpen(true);
+            }}
+          >
+            <span>Anunciar meu Imóvel</span>
+            <ArrowRight size={15} />
+          </button>
+          <a href="/admin" onClick={() => setMobileMenuOpen(false)}>
+            <span style={{ color: '#e9c79b' }}>Área Administrativa</span>
+            <ArrowUpRight size={15} />
+          </a>
         </div>
       </header>
 
@@ -484,25 +520,25 @@ export default function PortalHomeView({
                 <tbody>
                   {spaces.map((sp) => (
                     <tr key={sp.id}>
-                      <td>
+                      <td data-label="Condomínio">
                         <b style={{ fontSize: '1.08rem' }}>{sp.name}</b>
                         <div style={{ fontSize: '0.78rem', color: 'var(--mut)' }}>
                           {sp.developer}
                         </div>
                       </td>
-                      <td>{sp.region}</td>
-                      <td>
+                      <td data-label="Localização">{sp.region}</td>
+                      <td data-label="Metragem">
                         <b>A partir de {sp.minAreaM2} m²</b>
                       </td>
-                      <td>{sp.greenAreaText}</td>
-                      <td>
+                      <td data-label="Área Verde & Lazer">{sp.greenAreaText}</td>
+                      <td data-label="Valor Inicial">
                         R$ {Number(sp.defaultLotPrice).toLocaleString('pt-BR')}
                       </td>
-                      <td>
+                      <td data-label="Plano Direto">
                         <span className="badge confirmada">{sp.offerTitle}</span>
                       </td>
-                      <td>{sp.availableLots} unidades</td>
-                      <td>
+                      <td data-label="Disponibilidade">{sp.availableLots} unidades</td>
+                      <td data-label="Página Exclusiva">
                         <a
                           href={getSpaceHref(sp.slug)}
                           style={{
@@ -649,6 +685,24 @@ export default function PortalHomeView({
         WhatsApp
       </a>
 
+      {/* Barra Fixa Inferior Mobile (Thumb-Zone UX) */}
+      <div className="mobile-bottom-dock">
+        <a href="#espacos" className="btn" style={{ padding: '10px 12px' }}>
+          Ver Condomínios
+        </a>
+        <a
+          href={`https://wa.me/${globalWhatsapp}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            background: '#1f9d55',
+            color: '#fff',
+          }}
+        >
+          WhatsApp Plantão
+        </a>
+      </div>
+
       <PropertyCaptureModal
         isOpen={captureModalOpen}
         onClose={() => setCaptureModalOpen(false)}
@@ -719,7 +773,7 @@ export default function PortalHomeView({
                     placeholder="Seu nome"
                   />
                 </label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div className="form-grid-2">
                   <label>
                     WhatsApp
                     <input
