@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { prisma, ensureSeeded } from '@/lib/prisma';
 
 export async function GET() {
@@ -112,6 +113,10 @@ export async function POST(req: NextRequest) {
         featuredOrder: count + 1,
       },
     });
+
+    revalidatePath('/');
+    revalidatePath('/admin');
+    revalidatePath(`/espaco/${created.slug}`);
 
     return NextResponse.json({ space: created }, { status: 201 });
   } catch (err: any) {

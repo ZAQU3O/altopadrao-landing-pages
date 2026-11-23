@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 
 export async function PATCH(
@@ -137,6 +138,10 @@ export async function PATCH(
       },
     });
 
+    revalidatePath('/');
+    revalidatePath('/admin');
+    revalidatePath(`/espaco/${updated.slug}`);
+
     return NextResponse.json({ space: updated });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
@@ -150,6 +155,8 @@ export async function DELETE(
   try {
     const { id } = await context.params;
     await prisma.space.delete({ where: { id } });
+    revalidatePath('/');
+    revalidatePath('/admin');
     return NextResponse.json({ deleted: true, id });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

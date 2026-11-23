@@ -78,6 +78,27 @@ export default function PortalHomeView({ spaces }: PortalHomeViewProps) {
     return `/espaco/${slug}`;
   };
 
+  const getReserveCtaLabel = (name: string) => {
+    const clean = String(name || '').replace(/^Reservas?\s+/i, '').trim();
+    return `Reservas ${clean || name}, clique aqui`;
+  };
+
+  const minAreaActive =
+    spaces.length > 0
+      ? Math.min(...spaces.map((s) => Number(s.minAreaM2) || 450))
+      : 330;
+  const maxInstActive =
+    spaces.length > 0
+      ? Math.max(...spaces.map((s) => Number(s.maxInstallments) || 60))
+      : 60;
+  const spaceNamesList =
+    spaces.length > 1
+      ? `${spaces
+          .slice(0, -1)
+          .map((s) => s.name)
+          .join(', ')} ou ${spaces[spaces.length - 1].name}`
+      : spaces[0]?.name || 'condomínios fechados de alto padrão';
+
   const handleQuickReserveSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!quickReserveSpace) return;
@@ -205,7 +226,7 @@ export default function PortalHomeView({ spaces }: PortalHomeViewProps) {
                     </div>
 
                     <div className="hero-card-cta">
-                      <span>Reservas {sp.name}, clique aqui</span>
+                      <span>{getReserveCtaLabel(sp.name)}</span>
                       <ArrowRight size={15} />
                     </div>
                   </a>
@@ -219,15 +240,18 @@ export default function PortalHomeView({ spaces }: PortalHomeViewProps) {
         <div className="facts">
           <div className="wrap">
             <div>
-              <b>{spaces.length} Condomínios</b>
+              <b>
+                {spaces.length}{' '}
+                {spaces.length === 1 ? 'Condomínio' : 'Condomínios'}
+              </b>
               <span>nas regiões mais valorizadas de Teresina</span>
             </div>
             <div>
-              <b>330 a 1.000 m²</b>
+              <b>A partir de {minAreaActive} m²</b>
               <span>lotes amplos prontos ou em obras</span>
             </div>
             <div>
-              <b>Entrada + 60x</b>
+              <b>Entrada + {maxInstActive}x</b>
               <span>condições diretas sem burocracia bancária</span>
             </div>
             <div>
@@ -387,7 +411,7 @@ export default function PortalHomeView({ spaces }: PortalHomeViewProps) {
                           className="btn"
                           style={{ flex: 1 }}
                         >
-                          Reservas {sp.name}, clique aqui
+                          {getReserveCtaLabel(sp.name)}
                           <ArrowUpRight size={16} />
                         </a>
                         <button
@@ -483,9 +507,9 @@ export default function PortalHomeView({ spaces }: PortalHomeViewProps) {
               <p className="eyebrow">Venda ou Permute com a AltoPadrão</p>
               <h2>Possui um lote ou residência em condomínio fechado?</h2>
               <p className="lead">
-                Se você é proprietário no Reserva Aldebaran, Terras Alphaville,
-                Alphaville Teresina ou Fazenda Real, nossa equipe conecta seu
-                imóvel a compradores qualificados com total sigilo e agilidade.
+                Se você é proprietário no {spaceNamesList}, nossa equipe conecta
+                seu imóvel a compradores qualificados com total sigilo e
+                agilidade.
               </p>
               <ul className="tick" style={{ marginBottom: '28px' }}>
                 <li>Avaliação de mercado precisa baseada nas últimas vendas</li>
