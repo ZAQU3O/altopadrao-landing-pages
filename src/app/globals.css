@@ -361,7 +361,9 @@ header.lp-header .wrap {
 
 .fl-l, .fl-d {
   height: 84px;
-  width: auto;
+  width: auto !important;
+  aspect-ratio: auto !important;
+  object-fit: contain !important;
 }
 
 .logo {
@@ -747,7 +749,7 @@ header.lp-header .btn {
   align-items: center;
 }
 
-.split img {
+.split > img {
   width: 100%;
   aspect-ratio: 4/5;
   object-fit: cover;
@@ -764,7 +766,7 @@ header.lp-header .btn {
   .split.rev > :first-child {
     order: 0;
   }
-  .split img {
+  .split > img {
     aspect-ratio: 16/10;
   }
 }

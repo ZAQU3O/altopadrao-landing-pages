@@ -127,6 +127,10 @@ export default function SpaceSubdomainView({
 
   // Split offerTitle like "Entrada + 60x" to style the "+"
   const offerParts = String(space.offerTitle || 'Entrada + 60x').split('+');
+  const shortSpaceName =
+    String(space.name || '')
+      .replace(/\s+Teresina\s*\d*$/i, '')
+      .trim() || space.name;
 
   return (
     <div>
@@ -441,10 +445,10 @@ export default function SpaceSubdomainView({
           >
             <div>
               <p className="eyebrow" style={{ marginBottom: '6px' }}>
-                Venda ou Permuta · {space.name}
+                Venda ou Permuta · {shortSpaceName}
               </p>
               <h3 style={{ fontSize: '2.1rem', color: '#fff' }}>
-                Já possui um lote ou residência no {space.name}?
+                Já possui um lote ou residência no {shortSpaceName}?
               </h3>
               <p style={{ margin: '8px 0 0', opacity: 0.85 }}>
                 Anuncie seu imóvel com a AltoPadrão e apresente para clientes
