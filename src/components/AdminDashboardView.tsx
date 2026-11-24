@@ -780,6 +780,27 @@ export default function AdminDashboardView({
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <a
+              href="/"
+              style={{
+                background: 'rgba(233, 199, 155, 0.14)',
+                border: '1px solid rgba(233, 199, 155, 0.4)',
+                color: '#e9c79b',
+                padding: '9px 14px',
+                borderRadius: '2px',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+              }}
+              title="Acessar a Home pública do portal"
+            >
+              <Home size={15} />
+              Ir para a Home
+            </a>
+
             <button
               type="button"
               onClick={refreshAllData}
@@ -947,6 +968,30 @@ export default function AdminDashboardView({
                   )}
                 </button>
               ))}
+
+              <a
+                href="/"
+                className="admin-nav-btn"
+                style={{
+                  textDecoration: 'none',
+                  borderTop: '1px solid color-mix(in srgb, var(--ink) 14%, transparent)',
+                  marginTop: '4px',
+                  paddingTop: '12px',
+                  color: '#e9c79b',
+                }}
+              >
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                  }}
+                >
+                  <Home size={16} />
+                  <span>Ir para a Home Pública</span>
+                </span>
+                <ArrowUpRight size={14} />
+              </a>
             </nav>
           </div>
 
