@@ -654,10 +654,10 @@ export default function PortalHomeView({
             alt="AltoPadrão Imobiliária"
           />
           <p>
-            <b>AltoPadrão Imobiliária</b> | CRECI 0481-PJ | Teresina - PI.
-            Imagens ilustrativas de projeto, sujeitas a alterações. Condições de
-            parcelamento direto sujeitas a análise de crédito, disponibilidade e
-            regras de cada incorporadora.
+            <b>AltoPadrão Imobiliária</b> | CRECI 0481-PJ | Av. Lindolfo Monteiro,
+            1210 - Fátima, Teresina - PI. Imagens ilustrativas de projeto,
+            sujeitas a alterações. Condições de parcelamento direto sujeitas a
+            análise de crédito, disponibilidade e regras de cada incorporadora.
           </p>
           <div style={{ marginTop: '16px' }}>
             <a

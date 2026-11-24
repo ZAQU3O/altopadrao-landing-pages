@@ -213,7 +213,7 @@ export const INITIAL_SPACES = [
       'O Terras Alphaville Teresina 3 está localizado em uma região com fácil acesso aos principais pontos da cidade, além de ser um vetor de crescimento de Teresina: a 5 km do Jockey Club, 7 km da UFPI, 9 km do Shopping Rio Poty e 10 km do Aeroporto.',
     ctaTitle: 'Um novo capítulo onde a vida ganha novas possibilidades.',
     ctaLead:
-      'Esse pode ser o seu lugar. Deixe seus dados para receber a tabela da nova etapa do Terras Alphaville Teresina 3 e agendar sua visita ao Stand de Vendas na Av. João XXIII, 2826 - Jóquei.',
+      'Esse pode ser o seu lugar. Deixe seus dados para receber a tabela da nova etapa do Terras Alphaville Teresina 3 e agendar seu atendimento exclusivo na AltoPadrão Imobiliária (Av. Lindolfo Monteiro, 1210 - Fátima).',
     footerDisclaimer:
       'AltoPadrão Imobiliária | CRECI 0481-PJ | Teresina - PI. O “Terras Alphaville Teresina 3” é um empreendimento imobiliário composto pelos loteamentos “Terras Alphaville Teresina 3A”, registrado sob o R-4 da matrícula nº 17.984, do 7° Oficial de Registro de Imóveis da Comarca de Teresina – PI, e “Terras Alphaville Teresina 3B”, em fase de aprovação final conforme Processo Administrativo n° 00097.000427/2026-48 (matrícula n° 23.364). Imagens e perspectivas artísticas meramente ilustrativas.',
     whatsappNumber: '5586900000000',
@@ -333,8 +333,8 @@ export const INITIAL_SPACES = [
         text: 'Jockey Club Piauí (5 km) · Universidade Federal do Piauí - UFPI (7 km) · Shopping Rio Poty (9 km) · Aeroporto de Teresina (10 km)',
       },
       {
-        title: 'Stand de Vendas Oficial',
-        text: 'Avenida João XXIII, 2826 - Jóquei, Teresina - PI (CEP 64051-005) · Horário: 09h às 18h',
+        title: 'Atendimento AltoPadrão Imobiliária',
+        text: 'Avenida Lindolfo Monteiro, 1210 - Fátima, Teresina - PI',
       },
       {
         title: 'Sustentabilidade & Segurança 24h',
