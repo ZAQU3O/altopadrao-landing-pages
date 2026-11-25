@@ -405,10 +405,68 @@ header.lp-header .wrap {
 }
 
 .fl-l, .fl-d {
-  height: 84px;
+  height: 68px;
   width: auto !important;
   aspect-ratio: auto !important;
   object-fit: contain !important;
+}
+
+.lp-form-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-bottom: 16px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+}
+
+.lp-form-brand {
+  flex-shrink: 0;
+  padding-right: 18px;
+  border-right: 1px solid color-mix(in srgb, var(--cu) 38%, transparent);
+}
+
+.lp-form-header-text {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.lp-form-kicker {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--cu);
+  font-weight: 700;
+}
+
+.lp-form-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.55rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.lp-form-sub {
+  font-size: 0.8rem;
+  color: var(--mut);
+  font-weight: 500;
+}
+
+@media (max-width: 480px) {
+  .lp-form-header {
+    gap: 14px;
+  }
+  .lp-form-brand {
+    padding-right: 14px;
+  }
+  .fl-l, .fl-d {
+    height: 54px;
+  }
+  .lp-form-title {
+    font-size: 1.35rem;
+  }
 }
 
 .logo {

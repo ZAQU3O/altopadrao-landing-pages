@@ -550,17 +550,30 @@ export default function SpaceSubdomainView({
               </div>
             ) : (
               <form id="f" className="lp-form" onSubmit={handleSubmitReservation}>
-                <div>
-                  <img
-                    className="fl-l"
-                    src="/images/aldebaran/logo-form-light.png"
-                    alt="AltoPadrão Imobiliária"
-                  />
-                  <img
-                    className="fl-d"
-                    src="/images/aldebaran/logo-form-dark.png"
-                    alt="AltoPadrão Imobiliária"
-                  />
+                <div className="lp-form-header">
+                  <div className="lp-form-brand">
+                    <img
+                      className="fl-l"
+                      src="/images/aldebaran/logo-form-light.png"
+                      alt="AltoPadrão Imobiliária"
+                    />
+                    <img
+                      className="fl-d"
+                      src="/images/aldebaran/logo-form-dark.png"
+                      alt="AltoPadrão Imobiliária"
+                    />
+                  </div>
+                  <div className="lp-form-header-text">
+                    <span className="lp-form-kicker">
+                      Atendimento Exclusivo · CRECI 0481-PJ
+                    </span>
+                    <strong className="lp-form-title">
+                      Solicitar Tabela & Simulação
+                    </strong>
+                    <span className="lp-form-sub">
+                      {space.name} · {space.offerTitle}
+                    </span>
+                  </div>
                 </div>
 
                 <label>
