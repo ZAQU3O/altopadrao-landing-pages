@@ -20,7 +20,7 @@ import {
 interface PortalHomeViewProps {
   spaces: any[];
   sysConfig?: any;
-  stats: {
+  stats?: {
     totalSpaces: number;
     totalConfirmedVgv: number;
     totalReservations: number;
