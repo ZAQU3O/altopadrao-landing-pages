@@ -341,37 +341,36 @@ export default function PortalHomeView({
                 <h2>Conheça nossos condomínios e escolha o seu lote.</h2>
               </div>
 
-              {/* Filtro Comercial */}
-              <div
-                style={{
-                  display: 'flex',
-                  gap: '12px',
-                  flexWrap: 'wrap',
-                  alignItems: 'center',
-                }}
-              >
-                <select
-                  aria-label="Filtrar por Condomínio"
-                  value={selectedSlug}
-                  onChange={(e) => setSelectedSlug(e.target.value)}
-                  style={{ width: 'auto', minWidth: '210px' }}
-                >
-                  <option value="ALL">Todos os Condomínios</option>
-                  {spaces.map((sp) => (
-                    <option key={sp.slug} value={sp.slug}>
-                      {sp.name}
-                    </option>
-                  ))}
-                </select>
-
+              {/* Filtro Comercial Moderno (Busca + Chips estilo App) */}
+              <div className="portal-filter-bar">
                 <input
                   type="search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Buscar por localização ou condomínio..."
-                  style={{ width: '250px' }}
+                  className="portal-search-input"
                 />
               </div>
+            </div>
+
+            <div className="portal-chips">
+              <button
+                type="button"
+                onClick={() => setSelectedSlug('ALL')}
+                className={`portal-chip ${selectedSlug === 'ALL' ? 'active' : ''}`}
+              >
+                Todos ({spaces.length})
+              </button>
+              {spaces.map((sp) => (
+                <button
+                  key={sp.slug}
+                  type="button"
+                  onClick={() => setSelectedSlug(sp.slug)}
+                  className={`portal-chip ${selectedSlug === sp.slug ? 'active' : ''}`}
+                >
+                  {sp.name}
+                </button>
+              ))}
             </div>
 
             <div className="spaces-grid">
@@ -403,7 +402,12 @@ export default function PortalHomeView({
                       >
                         {sp.developer}
                       </div>
-                      <h3 style={{ fontSize: '2.15rem', marginTop: '4px' }}>
+                      <h3
+                        style={{
+                          fontSize: 'clamp(1.65rem, 4.8vw, 2.15rem)',
+                          marginTop: '4px',
+                        }}
+                      >
                         {sp.name}
                       </h3>
                       <p
@@ -466,7 +470,7 @@ export default function PortalHomeView({
                         </div>
                       </div>
 
-                      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                      <div className="space-card-actions">
                         <a
                           href={getSpaceHref(sp.slug)}
                           className="btn"
@@ -590,10 +594,10 @@ export default function PortalHomeView({
               style={{
                 background: 'rgba(246, 241, 232, 0.04)',
                 border: '1px solid rgba(233, 199, 155, 0.22)',
-                padding: '34px',
-                borderRadius: '2px',
+                padding: 'clamp(20px, 4vw, 34px)',
+                borderRadius: '10px',
                 display: 'grid',
-                gap: '22px',
+                gap: '20px',
               }}
             >
               <h3 style={{ color: '#e9c79b', fontSize: '1.85rem' }}>
