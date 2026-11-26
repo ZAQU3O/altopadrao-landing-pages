@@ -52,7 +52,71 @@ O roteamento de subdomínios é gerenciado automaticamente pelo middleware em [`
 
 ---
 
-## 3. Tecnologias Utilizadas
+## 3. Como Funciona na Prática (Fluxo Operacional do Dia a Dia)
+
+Abaixo está o funcionamento prático da plataforma em cada ponta da operação comercial da **AltoPadrão Imobiliária**:
+
+### A. Jornada do Cliente Comprador (Simulação & Reserva de Lote)
+1. **Entrada pela Vitrine ou Tráfego Direto:**
+   - O cliente pode entrar pelo **Portal Principal** (`altopadraoreservas.com`), comparar os condomínios lado a lado (preço, entrada mínima, prazo sem juros e metragem) e clicar no empreendimento desejado; **ou**
+   - Entrar diretamente na **Landing Page exclusiva** do condomínio vinda de um anúncio do Instagram/Google (ex.: `aldebaran.altopadraoreservas.com` ou `terrasalphaville.altopadraoreservas.com`).
+2. **Exploração & Simulação Sem Juros:**
+   - Na página do condomínio, o cliente navega pelas galerias (Complexo Aquático, Academia, Spa, Infantil e Localização).
+   - No **Simulador de Parcelamento Direto**, ele digita o **Valor do Lote** e o **Valor da Entrada** (com botões rápidos de *Mínima 10%*, *20%* ou *30%*). O sistema calcula na hora o saldo financiado e o valor exato das parcelas mensais sem juros.
+   - Ao clicar em **"Reservar com esta simulação"**, a página rola suavemente até o formulário de reserva já trazendo os valores simulados vinculados.
+3. **Envio da Reserva & Atendimento Imediato no WhatsApp:**
+   - O cliente preenche **Nome**, **WhatsApp** e a **Metragem de interesse** e clica no botão de envio.
+   - Em menos de 1 segundo, o sistema realiza **5 ações simultâneas**:
+     1. Grava a reserva no banco de dados **Neon PostgreSQL** com um protocolo único (ex.: `RES-2026-4819`).
+     2. Dispara o evento de conversão `Lead` no **Meta Pixel** e `generate_lead` no **Google Tag Manager**.
+     3. Dispara uma notificação em tempo real (com aviso sonoro) para a tela do **Painel Administrativo (`/admin`)**.
+     4. Envia os dados via **Webhook** (se configurado) para o CRM ou automação da imobiliária.
+     5. **Redireciona o cliente para o WhatsApp oficial da AltoPadrão** já com a mensagem pronta contendo protocolo, condomínio, metragem escolhida e plano de pagamento simulado.
+
+---
+
+### B. Jornada do Proprietário (Captação de Lotes e Casas)
+1. Tanto no Portal Principal quanto dentro de qualquer Landing Page, há a seção **"Já possui um lote ou residência?"** e o botão **"Anunciar Lote / Imóvel"** no topo.
+2. Ao clicar, abre-se o modal de **Captação de Imóveis**, onde o proprietário informa:
+   - Nome, WhatsApp e E-mail;
+   - Nome do Condomínio e Tipo do Imóvel (*Lote / Terreno*, *Casa Pronta*, *Casa em Construção*);
+   - Quadra/Lote, Área em m², Valor Pretendido e Objetivo (*Venda*, *Permuta*, *Avaliação*).
+3. O sistema gera o protocolo `CAP-2026-XXX`, salva na aba **"Captação de Imóveis"** do painel `/admin` e alerta a equipe de captação em tempo real.
+
+---
+
+### C. Rotina da Equipe Comercial e Gestores no Painel (`/admin`)
+1. **Acesso Seguro:** O gestor ou coordenador acessa `/admin` e entra com seu e-mail e senha administrativos.
+2. **Monitoramento ao Vivo (Plantão de Vendas):**
+   - Com o painel aberto no computador ou celular, qualquer nova reserva feita em qualquer landing page faz saltar um **alerta visual no canto da tela acompanhado de um sinal sonoro**, sem precisar recarregar a página.
+3. **Evolução do Funil e Controle de Estoque:**
+   - Na aba **Reservas & Transações**, a equipe acompanha todas as solicitações, podendo filtrar por condomínio, buscar pelo nome/protocolo do cliente ou clicar no botão **"WhatsApp"** ao lado do lead para abrir a conversa diretamente com ele.
+   - Ao clicar em **"Confirmar"**, o sistema confirma a reserva e **desconta automaticamente 1 unidade do estoque disponível** daquele condomínio nas páginas públicas.
+   - O seletor de estágio financeiro permite atualizar o andamento de cada negócio (*Aguardando Entrada* → *Sinal Solicitado* → *Sinal Pago* → *Entrada Quitada* → *Contrato Assinado*).
+4. **Relatórios de VGV & Exportação:**
+   - Na aba **Relatórios Detalhados**, a diretoria acompanha em tempo real o **VGV Confirmado**, **Total de Entradas**, **Saldo Parcelado**, **Taxa de Conversão** e o comparativo de desempenho entre os condomínios.
+   - O botão **"Exportar CSV"** baixa a planilha completa de reservas e clientes para uso no Excel ou Google Sheets.
+
+---
+
+### D. Como Criar ou Editar uma Landing Page pelo CMS (Sem Programador)
+1. **Para editar textos, preços ou fotos de uma página existente:**
+   - No painel `/admin`, abra a aba **Landing Pages (CMS)** e clique em **"Editar Textos, Preços e Fotos"** no card do condomínio.
+   - O editor visual abre dividido em 4 abas:
+     - **1. Dados & Preços:** Altere nome, estoque de lotes, preço inicial, prazo sem juros, % de entrada mínima, WhatsApp específico do plantão ou Meta Pixel da página.
+     - **2. Topo, Destaques & Simulador:** Edite os títulos de impacto, textos do simulador e os 4 blocos numéricos (*Bento Grid*).
+     - **3. Textos das Seções:** Altere os textos de *O Projeto*, *Clube & Lazer*, *Spa*, *Família*, *Localização* e *Chamada Final*.
+     - **4. Imagens & Galeria:** Troque a foto de fundo do topo ou qualquer foto das galerias clicando em **"Enviar do PC"** (para subir um arquivo direto do computador) ou colando o link da imagem.
+   - Ao clicar em **"Salvar Tudo e Publicar"**, a landing page e a vitrine da Home são atualizadas instantaneamente em produção.
+2. **Para lançar um novo condomínio em minutos:**
+   - Na aba **Landing Pages (CMS)**, preencha o formulário **"Criar Nova Landing Page"** informando Nome, Slug do subdomínio (ex.: `fazendareal`), Cidade, Quantidade de Lotes e Valor Inicial.
+   - O sistema cria a nova landing page completa imediatamente em `/espaco/fazendareal` (e `fazendareal.altopadraoreservas.com`), adiciona o card na Home Principal e já permite personalizar todas as fotos e textos pelo editor CMS.
+3. **Para remover um condomínio encerrado:**
+   - Basta clicar no botão **"Apagar"** no card da landing page dentro do CMS. O sistema remove a página e reorganiza automaticamente o grid da Home Principal para não deixar espaços vazios.
+
+---
+
+## 4. Tecnologias Utilizadas
 
 - **Framework:** [Next.js 15](https://nextjs.org/) (App Router, Server Components & Middleware)
 - **Interface:** [React 19](https://react.dev/), CSS Moderno (Custom Properties, CSS Grid `auto-fit`, Scroll Snap) & [Lucide Icons](https://lucide.dev/)
@@ -62,7 +126,7 @@ O roteamento de subdomínios é gerenciado automaticamente pelo middleware em [`
 
 ---
 
-## 4. Estrutura do Projeto
+## 5. Estrutura do Projeto
 
 ```text
 ├── prisma/
@@ -112,7 +176,7 @@ O roteamento de subdomínios é gerenciado automaticamente pelo middleware em [`
 
 ---
 
-## 5. Como Rodar o Projeto Localmente
+## 6. Como Rodar o Projeto Localmente
 
 ### Pré-requisitos
 - **Node.js** 18.18+ ou 20+
@@ -151,7 +215,7 @@ O roteamento de subdomínios é gerenciado automaticamente pelo middleware em [`
 
 ---
 
-## 6. Como Apontar o Domínio Definitivo e Subdomínios na Vercel
+## 7. Como Apontar o Domínio Definitivo e Subdomínios na Vercel
 
 Quando o domínio oficial (ex.: `altopadraoreservas.com`) estiver registrado:
 
@@ -166,7 +230,7 @@ Quando o domínio oficial (ex.: `altopadraoreservas.com`) estiver registrado:
 
 ---
 
-## 7. Contato & Identidade Institucional
+## 8. Contato & Identidade Institucional
 
 **AltoPadrão Imobiliária**
 - **CRECI:** 0481-PJ
